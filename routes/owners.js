@@ -12,16 +12,7 @@ router.get("/", async (req, res, next) => {
   }
 });
 
-const protectedRoute = (req, res, next) => {
-  try {
-    req.user = jwt.verify(req.cookies.token, process.env.JWT_SECRET_KEY);
-    next();
-  } catch (err) {
-    res.status(401).end("You are not authorized");
-  }
-};
-
-router.get("/:firstName", protectedRoute, async (req, res, next) => {
+router.get("/:firstName", async (req, res, next) => {
   try {
     const firstName = req.params.firstName;
     const regex = new RegExp(firstName, "gi");
