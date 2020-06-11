@@ -14,9 +14,6 @@ router.get("/", async (req, res, next) => {
 
 const protectedRoute = (req, res, next) => {
   try {
-    if (!req.cookies.token) {
-      throw new Error("Go away!");
-    }
     req.user = jwt.verify(req.cookies.token, process.env.JWT_SECRET_KEY);
     next();
   } catch (err) {
