@@ -3,16 +3,21 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const Owner = require("../models/Owner");
 
-router.get("/", async (req, res, next) => {
+const profileAuth = (req, res, next) => {
   try {
-    const owners = await Owner.find();
-    res.send(owners);
-  } catch (err) {
-    next(err);
-  }
-});
+    req.user = jwt.verify(req.cookies.token, process.env.JWT_SECRET_KEY);
 
-router.get("/:firstName", async (req, res, next) => {
+    if (req.user.name !== req.params.firstName) {
+      res.status(401).end("You are not authorised.");
+    }
+
+    next();
+  } catch (error) {
+    res.status(401).end("Access denied.");
+  }
+}
+
+router.get("/:firstName", profileAuth, async (req, res, next) => {
   try {
     const firstName = req.params.firstName;
     const regex = new RegExp(firstName, "gi");

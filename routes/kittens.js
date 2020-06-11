@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Kitten = require("../models/Kitten");
+const auth = require("../middleware/auth");
 
 router.get("/", async (req, res, next) => {
   try {
@@ -22,7 +23,7 @@ router.get("/:name", async (req, res, next) => {
   }
 });
 
-router.post("/new", async (req, res, next) => {
+router.post("/new", auth, async (req, res, next) => {
   try {
     const kitten = new Kitten(req.body);
     await Kitten.init();
@@ -37,7 +38,7 @@ router.post("/new", async (req, res, next) => {
   }
 });
 
-router.put("/:name", async (req, res) => {
+router.put("/:name", auth, async (req, res) => {
   const name = req.params.name;
   const newKitten = req.body;
   const kitten = await Kitten.findOneAndReplace({name}, newKitten, {
@@ -46,7 +47,7 @@ router.put("/:name", async (req, res) => {
   res.send(kitten);
 });
 
-router.patch("/:name", async (req, res) => {
+router.patch("/:name", auth, async (req, res) => {
   const name = req.params.name;
   const updatedKitten = req.body;
   const kitten = await Kitten.findOneAndUpdate({name}, updatedKitten, {
@@ -55,7 +56,7 @@ router.patch("/:name", async (req, res) => {
   res.send(kitten);
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", auth, async (req, res, next) => {
   try {
     const id = req.params.id;
     await Kitten.findByIdAndDelete(id);
